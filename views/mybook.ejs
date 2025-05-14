@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Borrowed Books</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/styles/mybook.css">
+  <style>
+  :root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --bg: #f7fafc;
+  --card-bg: #ffffff;
+  --text-main: #1a202c;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --radius: 14px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.1);
+  --transition: 0.25s cubic-bezier(.4,0,.2,1);
+  --hover-shadow: 0 8px 30px rgba(37,99,235,0.15);
+}
+
+body {
+  background: linear-gradient(135deg, #e0e7ff, #f7fafc);
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  margin: 0;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.mybook-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 36px 24px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  animation: fadeIn 0.6s ease-in-out;
+  border: 1px solid var(--border);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: none; }
+}
+
+h1 {
+  text-align: center;
+  color: var(--primary);
+  margin-bottom: 32px;
+  font-size: 2.4rem;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(37,99,235,0.3);
+}
+
+.empty-message {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 48px;
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  font-style: italic;
+}
+
+.empty-message svg {
+  width: 90px;
+  height: 90px;
+  opacity: 0.2;
+  filter: drop-shadow(0 2px 4px rgba(37,99,235,0.1));
+}
+
+.book-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 28px;
+}
+
+.book-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  background: linear-gradient(145deg, #ffffff, #f0f4ff);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: box-shadow var(--transition), transform var(--transition);
+  position: relative;
+  cursor: pointer;
+}
+
+.book-item:hover, .book-item:focus {
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-3px) scale(1.02);
+  outline: none;
+}
+
+.book-cover {
+  width: 70px;
+  height: 98px;
+  background: linear-gradient(135deg, #dbeafe 60%, #f1f5f9 100%);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: #93c5fd;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(49,130,206,0.12);
+  margin-right: 14px;
+  overflow: hidden;
+}
+
+.book-cover img {
+  border-radius: 8px;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.book-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book-details h2 {
+  margin: 0 0 8px 0;
+  color: var(--text-main);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.15px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.book-details p {
+  margin: 4px 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.return-btn {
+  margin-top: 18px;
+  padding: 10px 26px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: background var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 6px rgba(49,130,206,0.1);
+  outline: none;
+  align-self: flex-start;
+}
+
+.return-btn:hover, .return-btn:focus {
+  background: var(--primary-dark);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.2);
+}
+
+@media (max-width: 600px) {
+  .mybook-container {
+    padding: 24px 12px;
+  }
+  .book-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .book-cover {
+    margin: 0 auto 10px auto;
+    width: 80px;
+    height: 110px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="mybook-container" aria-label="My Borrowed Books">
+    <h1>My Borrowed Books</h1>
+    <% if (books.length === 0) { %>
+      <div class="empty-message">
+        <svg viewBox="0 0 64 64" fill="none">
+          <rect x="8" y="16" width="48" height="36" rx="5" fill="#60a5fa"/>
+          <rect x="12" y="20" width="40" height="28" rx="3" fill="#fff"/>
+          <rect x="18" y="28" width="28" height="4" rx="2" fill="#dbeafe"/>
+          <rect x="18" y="36" width="16" height="4" rx="2" fill="#dbeafe"/>
+        </svg>
+        <span>You have not borrowed any books.</span>
+      </div>
+    <% } else { %>
+      <ul class="book-list">
+        <% books.forEach(function(book) { %>
+          <li class="book-item" tabindex="0">
+            <div class="book-cover" aria-hidden="true">
+              <%= book.coverUrl ? `<img src="${book.coverUrl}" alt="Cover of ${book.title}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : book.title.charAt(0).toUpperCase() %>
+            </div>
+            <div class="book-details">
+              <h2><%= book.title %></h2>
+              <p><strong>Author:</strong> <%= book.author %></p>
+              <p><strong>Genre:</strong> <%= book.genre %></p>
+              <p><strong>Borrowed:</strong> <%= book.borrowedDate ? book.borrowedDate.toLocaleDateString() : '' %></p>
+              <form action="/return/<%= book._id %>" method="POST" style="display:inline;">
+                <button class="return-btn" type="submit" aria-label="Return <%= book.title %>">Return</button>
+              </form>
+            </div>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </div>
+  <script>
+    // Optional: Show confirmation before returning a book
+    document.querySelectorAll('.return-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (!confirm('Are you sure you want to return this book?')) {
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

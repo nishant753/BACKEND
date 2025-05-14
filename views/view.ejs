@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library | All Books</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
+      margin: 0;
+      min-height: 100vh;
+      color: #23272b;
+    }
+    header {
+      position: fixed;
+      top: 0; left: 0; width: 100%; z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(90deg, #00897b, #43a047);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .header-title {
+      font-size: 2.7rem;
+      font-weight: 600;
+      font-family: 'Pacifico', cursive;
+      letter-spacing: 2px;
+      color: #fdfdfd;
+      text-shadow: 1px 2px 6px rgba(0,0,0,0.3);
+    }
+    main.all-books-container {
+      max-width: 1200px;
+      margin: 120px auto 2rem auto;
+      padding: 2rem;
+      padding-top: 0%;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(40,50,60,0.08);
+      min-height: 70vh;
+    }
+    .hero-books h1 {
+      color: #2b3a4a;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .search-bar {
+      display: flex;
+      max-width: 500px;
+      margin: 0 auto 1.5rem auto;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .search-bar input[type="text"] {
+      flex: 1;
+      padding: 0.8rem 1rem;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+    }
+    .search-bar button {
+      background: #43a047;
+      color: #fff;
+      border: none;
+      padding: 0 1.3rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-bar button:hover {
+      background: #388e3c;
+    }
+    .book-filters {
+      display: flex;
+      gap: 0.7rem;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .book-filters select, .book-filters .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: #f1f3f4;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .book-filters select:focus, .book-filters .btn:hover {
+      border-color: #67d6bc;
+      background: #e0f2f1;
+    }
+    .add-btn {
+      background: linear-gradient(90deg, #43a047, #00897b);
+      color: white;
+      padding: 0.7rem 1.6rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .add-btn:hover {
+      background: linear-gradient(90deg, #00897b, #43a047);
+    }
+    .book-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.8rem;
+    }
+    .book-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .book-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    .book-cover {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    .book-card h2 {
+      font-size: 1.2rem;
+      margin: 0 0 0.3rem 0;
+    }
+    .book-card h2 a {
+      text-decoration: none;
+      color: #333;
+      transition: color 0.2s;
+    }
+    .book-card h2 a:hover {
+      color: #00796b;
+    }
+    .status-badge {
+      padding: 0.3em 0.7em;
+      border-radius: 12px;
+      font-size: 0.9em;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+    .status-available {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-borrowed {
+      background: #fff3e0;
+      color: #ef6c00;
+    }
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .actions .btn {
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      border: none;
+      background: #eceff1;
+      font-weight: 600;
+      transition: background 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .actions .btn:hover {
+      background: #cfd8dc;
+    }
+    .actions .btn.view-details {
+      background: #43a047;
+      color: white;
+    }
+    .actions .btn.view-details:hover {
+      background: #388e3c;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-top: 2rem;
+      text-align: center;
+      background: linear-gradient(90deg, #43a047, #00897b);
+      color: white;
+      padding: 0.7rem 1.6rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .back-btn:hover {
+      background: linear-gradient(90deg, #00897b, #43a047);
+    }
+    @media (max-width: 700px) {
+      .book-filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <span class="header-title">UniShelf</span>
+</header>
+<main class="all-books-container">
+  <div class="hero-books">
+    <h1>📚 All Books</h1>
+    <form class="search-bar" action="/search" method="GET" role="search">
+      <input type="text" name="q" placeholder="Search books by title, author, or genre...">
+      <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+  </div>
+  <div class="book-filters">
+    <form method="GET" action="/view" style="display:flex;gap:0.5rem;">
+      <select name="genre">
+        <option value="">All Genres</option>
+        <option value="Fiction">Fiction</option>
+        <option value="Non-fiction">Non-fiction</option>
+        <option value="Mystery">Mystery</option>
+        <option value="Science Fiction">Science Fiction</option>
+        <option value="Fantasy">Fantasy</option>
+        <option value="Biography">Biography</option>
+        <option value="Romance">Romance</option>
+        <option value="History">History</option>
+        <option value="Children">Children</option>
+        <option value="Other">Other</option>
+      </select>
+      <select name="sort">
+        <option value="">Sort By</option>
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+      </select>
+      <button type="submit" class="btn"><i class="fas fa-filter"></i> Filter</button>
+    </form>
+    <a href="/create" class="add-btn"><i class="fas fa-plus"></i> Add New Book</a>
+  </div>
+
+  <% if (books.length > 0) { %>
+    <ul class="book-list">
+      <% books.forEach(book => { %>
+        <li class="book-card">
+         
+          <h2><a href="/books/<%= book._id %>"><%= book.title %></a></h2>
+          <p>by <%= book.author %></p>
+          <p><small><%= book.genre %></small></p>
+          <p>
+            <% if (book.borrowed) { %>
+              <span class="status-badge status-borrowed"><i class="fas fa-user-clock"></i> Borrowed by <%= book.borrowedBy %></span>
+            <% } else { %>
+              <span class="status-badge status-available"><i class="fas fa-check-circle"></i> Available</span>
+            <% } %>
+          </p>
+          <div class="actions">
+            <a href="/books/<%= book._id %>" class="btn view-details"><i class="fas fa-eye"></i> View Details</a>
+
+            <% if (!book.borrowed) { %>
+              <form action="/borrow/<%= book._id %>" method="POST">
+                <button type="submit" class="btn"><i class="fas fa-retweet"></i> Borrow</button>
+              </form>
+              <a href="/edit/<%= book._id %>" class="btn"><i class="fas fa-pen"></i> Edit</a>
+            <% } else if (book.borrowedBy === currentUser?.name) { %>
+              <form action="/return/<%= book._id %>" method="POST">
+                <button type="submit" class="btn"><i class="fas fa-undo"></i> Return</button>
+              </form>
+            <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p style="text-align:center; color:#888; font-size:1.2rem;">No books found.</p>
+  <% } %>
+
+  <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+</main>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= bookToEdit ? 'Edit Book' : 'Add New Book' %> | UniShelf</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #43a047;
+      --secondary: #67d6bc;
+      --accent: #fda085;
+      --surface: rgba(255,255,255,0.85);
+      --surface-dark: rgba(34,40,49,0.93);
+      --bg: linear-gradient(120deg, #67d6bc 0%, #43a047 100%);
+      --bg-dark: linear-gradient(120deg, #232931 0%, #393e46 100%);
+      --error: #e53935;
+      --border-radius: 18px;
+      --shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+      --font-main: 'Inter', sans-serif;
+      --font-brand: 'Pacifico', cursive;
+      --label: #222;
+      --label-dark: #eee;
+      --input-bg: #f9fafb;
+      --input-bg-dark: #232931;
+      --input-border: #ccc;
+      --input-border-dark: #444;
+      --focus: #55dfbf;
+      --focus-dark: #fda085;
+      --transition: 0.25s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="dark"] {
+      --surface: var(--surface-dark);
+      --bg: var(--bg-dark);
+      --label: var(--label-dark);
+      --input-bg: var(--input-bg-dark);
+      --input-border: var(--input-border-dark);
+      --focus: var(--focus-dark);
+    }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: var(--font-main);
+      background: var(--bg);
+      transition: background var(--transition);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100vw;
+      background: linear-gradient(90deg, #00897b, var(--primary));
+      
+      box-shadow: 0 4px 15px rgba(0,0,0,0.10);
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .header-title {
+      font-family: var(--font-brand);
+      font-size: 2.2rem;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+    .toggle-theme {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: #fff;
+      margin-left: 1rem;
+      transition: color var(--transition);
+    }
+    main {
+      width: 100vw;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      margin-top: 2.7rem;
+    }
+    .glass-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2.5rem 2.2rem 2rem 2.2rem;
+      margin: 2rem 0;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      animation: fadeIn 0.7s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    h1 {
+      font-size: 2.1rem;
+      color: var(--primary);
+      text-align: center;
+      margin: 0 0 1.5rem 0;
+      font-weight: 700;
+      letter-spacing: 1px;
+      transition: color var(--transition);
+    }
+    [data-theme="dark"] h1 {
+      color: var(--secondary);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .floating-label-group {
+      position: relative;
+      margin-bottom: 1.1rem;
+    }
+    .floating-label-group input,
+    .floating-label-group textarea,
+    .floating-label-group select {
+      width: 100%;
+      padding: 1.1rem 1rem 0.7rem 1rem;
+      font-size: 1.07rem;
+      border: 1.5px solid var(--input-border);
+      border-radius: 7px;
+      background: var(--input-bg);
+      color: var(--label);
+      transition: border-color var(--transition), background var(--transition), color var(--transition);
+      outline: none;
+      box-sizing: border-box;
+      font-family: var(--font-main);
+    }
+    [data-theme="dark"] .floating-label-group input,
+    [data-theme="dark"] .floating-label-group textarea,
+    [data-theme="dark"] .floating-label-group select {
+      background: var(--input-bg-dark);
+      color: var(--label-dark);
+      border-color: var(--input-border-dark);
+    }
+    .floating-label-group label {
+      position: absolute;
+      top: 1.05rem;
+      left: 1rem;
+      font-size: 1.07rem;
+      color: var(--label);
+      background: transparent;
+      pointer-events: none;
+      transition: all 0.18s cubic-bezier(.4,0,.2,1);
+      font-weight: 500;
+      opacity: 0.85;
+    }
+    .floating-label-group input:focus + label,
+    .floating-label-group input:not(:placeholder-shown) + label,
+    .floating-label-group textarea:focus + label,
+    .floating-label-group textarea:not(:placeholder-shown) + label,
+    .floating-label-group select:focus + label,
+    .floating-label-group select:not([value=""]) + label {
+      top: -0.6rem;
+      left: 0.85rem;
+      font-size: 0.98rem;
+      background: var(--surface);
+      padding: 0 0.3em;
+      color: var(--primary);
+      opacity: 1;
+      font-weight: 600;
+      z-index: 2;
+    }
+    [data-theme="dark"] .floating-label-group input:focus + label,
+    [data-theme="dark"] .floating-label-group input:not(:placeholder-shown) + label,
+    [data-theme="dark"] .floating-label-group textarea:focus + label,
+    [data-theme="dark"] .floating-label-group textarea:not(:placeholder-shown) + label,
+    [data-theme="dark"] .floating-label-group select:focus + label,
+    [data-theme="dark"] .floating-label-group select:not([value=""]) + label {
+      background: var(--surface-dark);
+      color: var(--secondary);
+    }
+    .floating-label-group input:focus,
+    .floating-label-group textarea:focus,
+    .floating-label-group select:focus {
+      border-color: var(--focus);
+      box-shadow: 0 0 0 3px rgba(85, 223, 191, 0.15);
+    }
+    [data-theme="dark"] .floating-label-group input:focus,
+    [data-theme="dark"] .floating-label-group textarea:focus,
+    [data-theme="dark"] .floating-label-group select:focus {
+      border-color: var(--focus-dark);
+      box-shadow: 0 0 0 3px rgba(253, 160, 133, 0.14);
+    }
+    .floating-label-group textarea {
+      min-height: 110px;
+      max-height: 300px;
+      resize: vertical;
+    }
+    .helper {
+      font-size: 0.97rem;
+      color: #888;
+      margin-top: 0.3rem;
+      margin-left: 0.1rem;
+    }
+    [data-theme="dark"] .helper {
+      color: #bbb;
+    }
+    .error-message {
+      color: var(--error);
+      font-size: 0.98rem;
+      margin-top: 0.15rem;
+      display: none;
+      font-weight: 500;
+    }
+    input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] {
+      border-color: var(--error);
+      background: #fff4f4;
+    }
+    [data-theme="dark"] input[aria-invalid="true"], [data-theme="dark"] select[aria-invalid="true"], [data-theme="dark"] textarea[aria-invalid="true"] {
+      background: #3a2323;
+    }
+    .form-actions {
+      display: flex;
+      flex-direction: row;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple:after {
+      content: '';
+      display: block;
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      width: 100px; height: 100px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(255,255,255,0.45);
+      opacity: 0;
+      transition: transform 0.4s, opacity 0.7s;
+    }
+    .ripple:active:after {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 1;
+      transition: 0s;
+    }
+    button[type="submit"] {
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      color: #fff;
+      padding: 0.95rem 2.2rem;
+      border: none;
+      border-radius: 7px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.18s;
+      box-shadow: 0 2px 8px rgba(67,160,71,0.08);
+      position: relative;
+      outline: none;
+    }
+    button[type="submit"]:hover, button[type="submit"]:focus {
+      background: linear-gradient(90deg, var(--accent), #f6d365);
+      color: #222;
+      transform: translateY(-2px) scale(1.03);
+      outline: 2px solid var(--accent);
+    }
+    .secondary-btn {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--secondary);
+      font-weight: 600;
+      padding: 0.95rem 1.8rem;
+      border-radius: 7px;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+    .secondary-btn:hover, .secondary-btn:focus {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      outline: 2px solid var(--accent);
+    }
+    @media (max-width: 600px) {
+      .glass-card {
+        padding: 1.5rem 0.5rem;
+        margin-top: 1rem;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      .header-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    localStorage.setItem('unishelf-theme', html.getAttribute('data-theme'));
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    // Persist theme
+    const saved = localStorage.getItem('unishelf-theme');
+    if(saved) document.documentElement.setAttribute('data-theme', saved);
+
+    // Theme toggle button
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+    // Form validation + confirmation
+    document.getElementById('book-form').addEventListener('submit', function(e) {
+      let valid = true;
+      document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('[aria-invalid]').forEach(el => el.setAttribute('aria-invalid', 'false'));
+
+      const title = document.getElementById('title');
+      if (!title.value.trim()) {
+        valid = false;
+        document.getElementById('title-error').style.display = 'block';
+        title.setAttribute('aria-invalid', 'true');
+      }
+      const author = document.getElementById('author');
+      if (!author.value.trim()) {
+        valid = false;
+        document.getElementById('author-error').style.display = 'block';
+        author.setAttribute('aria-invalid', 'true');
+      }
+      const genre = document.getElementById('genre');
+      if (!genre.value) {
+        valid = false;
+        document.getElementById('genre-error').style.display = 'block';
+        genre.setAttribute('aria-invalid', 'true');
+      }
+
+      if (!valid) {
+        e.preventDefault();
+        return;
+      }
+
+      // Confirmation dialog
+      if (!confirm('Are you sure you want to submit this book?')) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+
+</head>
+<body>
+  <header>
+    <span class="header-title">UniShelf</span>
+    <button id="theme-toggle" class="toggle-theme" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <span aria-hidden="true">🌙</span>
+    </button>
+  </header>
+  <main>
+    <section class="glass-card" role="main" aria-labelledby="formTitle">
+      <h1 id="formTitle"><%= bookToEdit ? 'Edit Book' : 'Add New Book' %></h1>
+      <form id="book-form" action="<%= bookToEdit ? `/edit/${bookToEdit._id}` : '/submit' %>" method="POST" autocomplete="on" novalidate>
+        <div class="floating-label-group">
+          <input type="text" id="title" name="title" placeholder=" " value="<%= bookToEdit?.title || '' %>" required aria-required="true" aria-describedby="title-error">
+          <label for="title">Title <span aria-hidden="true" style="color:var(--error);">*</span></label>
+          <span id="title-error" class="error-message" role="alert">Please enter the book title.</span>
+        </div>
+        <div class="floating-label-group">
+          <input type="text" id="author" name="author" placeholder=" " value="<%= bookToEdit?.author || '' %>" required aria-required="true" aria-describedby="author-error">
+          <label for="author">Author <span aria-hidden="true" style="color:var(--error);">*</span></label>
+          <span id="author-error" class="error-message" role="alert">Please enter the author's name.</span>
+        </div>
+        <div class="floating-label-group">
+          <select id="genre" name="genre" required aria-required="true" aria-describedby="genre-error">
+            <option value="" disabled <%= !bookToEdit?.genre ? 'selected' : '' %>>Select genre</option>
+            <option value="Fiction" <%= bookToEdit?.genre === 'Fiction' ? 'selected' : '' %>>Fiction</option>
+            <option value="Non-fiction" <%= bookToEdit?.genre === 'Non-fiction' ? 'selected' : '' %>>Non-fiction</option>
+            <option value="Mystery" <%= bookToEdit?.genre === 'Mystery' ? 'selected' : '' %>>Mystery</option>
+            <option value="Science Fiction" <%= bookToEdit?.genre === 'Science Fiction' ? 'selected' : '' %>>Science Fiction</option>
+            <option value="Fantasy" <%= bookToEdit?.genre === 'Fantasy' ? 'selected' : '' %>>Fantasy</option>
+            <option value="Biography" <%= bookToEdit?.genre === 'Biography' ? 'selected' : '' %>>Biography</option>
+            <option value="Romance" <%= bookToEdit?.genre === 'Romance' ? 'selected' : '' %>>Romance</option>
+            <option value="History" <%= bookToEdit?.genre === 'History' ? 'selected' : '' %>>History</option>
+            <option value="Children" <%= bookToEdit?.genre === 'Children' ? 'selected' : '' %>>Children</option>
+            <option value="Other" <%= bookToEdit?.genre === 'Other' ? 'selected' : '' %>>Other</option>
+          </select>
+          <label for="genre">Genre <span aria-hidden="true" style="color:var(--error);">*</span></label>
+          <span id="genre-error" class="error-message" role="alert">Please select a genre.</span>
+        </div>
+        <div class="floating-label-group">
+          <textarea id="description" name="description" placeholder=" " aria-describedby="desc-help"><%= bookToEdit?.description || '' %></textarea>
+          <label for="description">Description</label>
+          <div id="desc-help" class="helper">Optional. Add a short summary, fun fact, or quirky note! ✨</div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="ripple"><%= bookToEdit ? 'Update Book 📚' : 'Add Book ➕' %></button>
+          <a href="/"><button type="button" class="secondary-btn ripple">Back to Library</button></a>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>
